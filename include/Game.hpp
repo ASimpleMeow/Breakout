@@ -20,11 +20,13 @@ private:
     bool processEvents();
     void update(sf::Time deltaTime);
     void render();
+	void init(int level);
     
+	int gameLevel;
+
     sf::RenderWindow window;
     
     // game specific code
-	//Ball ball;
 	std::vector<Ball> balls;
 	Paddle paddle;
 	std::vector<Block> blocks;

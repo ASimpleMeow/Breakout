@@ -8,23 +8,45 @@
 
 Game::Game() :
     window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),"Breakout"),
-	//ball(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) ,
-	paddle{WINDOW_WIDTH/2, WINDOW_HEIGHT-50} {
+	paddle(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50),
+	gameLevel{1} {
 
     window.setFramerateLimit(60);
 	srand(static_cast<int>(time(NULL)));
 
+	init(gameLevel);
+	
+}
+
+void Game::init(int level) {
+
+	balls.clear();
+	blocks.clear();
+
+	gameLevel = level;
+
+	// main ball
+	balls.emplace_back(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, true);
+
+	//reset paddle
+	paddle.shape.setPosition( WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50 );
+
+	//level 1 and 2 wall
+	if (gameLevel > 0 && gameLevel < 3) {
+		for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
+			for (int r{ 0 }; r < BLOCK_ROWS; ++r)
+				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+		return;
+	}
+
 	// build wall
 	for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
 		for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
-			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS-1 && c > 0 && c < BLOCK_ROWS-1)
+			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_ROWS - 1)
 				balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
 			else blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
 		}
 
-	// main ball
-	balls.emplace_back(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, true);
-	
 }
 
 
@@ -57,7 +79,14 @@ bool Game::processEvents() {
     }
     
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) return false;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)) init(1);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2)) init(2);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3)) init(3);
     
+
+	if (gameLevel == 2) return true;	//automatic paddle
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 		paddle.veclocity.x = -PADDLE_VELOCITY;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
@@ -70,7 +99,9 @@ bool Game::processEvents() {
 
 void Game::update(sf::Time deltaTime) {
     
-	paddle.update(deltaTime);
+	if (gameLevel == 2) paddle.update(deltaTime, balls[0].x());
+	else paddle.update(deltaTime);
+	
 
 	for (auto& ball : balls) {
 		ball.update(deltaTime);

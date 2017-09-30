@@ -36,12 +36,12 @@ c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory0(737): wa
           [
               _Ty=Ball
           ]
-  c:\users\oleksandr\desktop\wit\year 3\semester 1\console game development\workspace\breakout\breakout\src\game.cpp(26): note: see reference to function template instantiation 'void std::vector<Ball,std::allocator<_Ty>>::emplace_back<int,int,bool>(int &&,int &&,bool &&)' being compiled
+  c:\users\oleksandr\desktop\wit\year 3\semester 1\console game development\workspace\breakout\breakout\src\game.cpp(29): note: see reference to function template instantiation 'void std::vector<Ball,std::allocator<_Ty>>::emplace_back<int,int,bool>(int &&,int &&,bool &&)' being compiled
           with
           [
               _Ty=Ball
           ]
-  c:\users\oleksandr\desktop\wit\year 3\semester 1\console game development\workspace\breakout\breakout\src\game.cpp(26): note: see reference to function template instantiation 'void std::vector<Ball,std::allocator<_Ty>>::emplace_back<int,int,bool>(int &&,int &&,bool &&)' being compiled
+  c:\users\oleksandr\desktop\wit\year 3\semester 1\console game development\workspace\breakout\breakout\src\game.cpp(29): note: see reference to function template instantiation 'void std::vector<Ball,std::allocator<_Ty>>::emplace_back<int,int,bool>(int &&,int &&,bool &&)' being compiled
           with
           [
               _Ty=Ball

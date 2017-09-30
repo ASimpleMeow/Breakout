@@ -14,3 +14,11 @@ void Paddle::update(sf::Time deltaTime) {
 	if (left() < 0) shape.move(-left(), 0);
 	if (right() > WINDOW_WIDTH) shape.move(-right() + WINDOW_WIDTH, 0);
 }
+
+void Paddle::update(sf::Time deltaTime, float ballX) {
+	update(deltaTime);
+
+	if (ballX > x()) veclocity.x = PADDLE_VELOCITY;
+	else if (ballX < x()) veclocity.x = -PADDLE_VELOCITY;
+	else veclocity.x = 0;
+}
