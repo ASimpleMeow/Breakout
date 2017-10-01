@@ -32,21 +32,42 @@ void Game::init(int level) {
 	paddle.shape.setPosition( WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50 );
 
 	//level 1 and 2 wall
-	if (gameLevel > 0 && gameLevel < 3) {
+	if (gameLevel == 1 || gameLevel == 2) {
 		for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
 			for (int r{ 0 }; r < BLOCK_ROWS; ++r)
 				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
 		return;
 	}
 
-	// build wall
+	//level 3 wall with random balls trapped in blocks
+	if (gameLevel == 3) {
+		for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
+			for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
+				if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_ROWS - 1)
+					balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+				else blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+			}
+		return;
+	}
+	
 	for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
 		for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
-			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_ROWS - 1)
-				balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
-			else blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+			switch (rand() % 5) {
+			case 0:
+				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), TRAP);
+				break;
+			case 1:
+				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), DURABLE);
+				break;
+			case 2:
+				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), REGEN);
+				break;
+			default:
+				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+				break;
+			}
+			
 		}
-
 }
 
 
@@ -83,6 +104,7 @@ bool Game::processEvents() {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)) init(1);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2)) init(2);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3)) init(3);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num4)) init(4);
     
 
 	if (gameLevel == 2) return true;	//automatic paddle
@@ -106,7 +128,10 @@ void Game::update(sf::Time deltaTime) {
 	for (auto& ball : balls) {
 		ball.update(deltaTime);
 		testCollision(paddle, ball);
-		for (auto& block : blocks) testCollision(block, ball);
+		for (auto& block : blocks) {
+			testCollision(block, ball);
+			block.update(deltaTime);
+		}
 		if (!ball.isActive) {
 			if (std::fabs(ball.y() - ball.spawn.y) > ball.shape.getRadius() * 5)
 				ball.isActive = true;
@@ -122,7 +147,7 @@ void Game::update(sf::Time deltaTime) {
 
 	balls.erase(std::remove_if(std::begin(balls), std::end(balls),
 		[](const Ball& ball) {
-		return ball.bottom() >= WINDOW_HEIGHT;
+		return ball.destroyed;
 		}
 		), std::end(balls)
 	);

@@ -11,7 +11,7 @@ Ball::Ball(float x, float y, bool active) :
 }
 
 void Ball::update(sf::Time deltaTime) {
-	shape.move(velocity * deltaTime.asSeconds());
+	shape.move( (slowed ? (velocity * 0.3f) : velocity) * deltaTime.asSeconds());
 
 	if (left() < 0) {
 		velocity.x = BALL_VELOCITY;
@@ -23,5 +23,15 @@ void Ball::update(sf::Time deltaTime) {
 		velocity.y = BALL_VELOCITY;
 	} else if (bottom() > WINDOW_HEIGHT) {
 		velocity.y = -BALL_VELOCITY;
+	}
+
+	if (bottom() >= WINDOW_HEIGHT) destroyed = true;
+
+	if (slowed) {
+		slowedTimer -= deltaTime.asSeconds();
+		if (slowedTimer <= 0) {
+			slowedTimer = SLOWED_TIMER;
+			slowed = false;
+		}
 	}
 }

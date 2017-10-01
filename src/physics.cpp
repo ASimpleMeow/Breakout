@@ -23,7 +23,12 @@ void testCollision(const Paddle& paddle, Ball& ball) noexcept {
 void testCollision(Block& block, Ball& ball) noexcept {
 	if (!isIntersecting(block, ball)) return;
 
-	if(ball.isActive) block.destroyed = true;
+	if (ball.isActive) block.health--;
+	if (block.blockType == TRAP) {
+		ball.slowed = true;
+		return;
+	}
+
 
 	float overlapLeft{ ball.right() - block.left() };
 	float overlapRight{ block.right() - ball.left() };

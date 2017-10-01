@@ -6,6 +6,7 @@
 constexpr int WINDOW_WIDTH{800}, WINDOW_HEIGHT{600};
 
 constexpr float BALL_RADIUS{ 10.f }, BALL_VELOCITY{ 150.0f };
+constexpr float SLOWED_TIMER{ 5 };
 
 struct Circle {
 	sf::CircleShape shape;
@@ -32,6 +33,14 @@ struct Rectangle {
 
 constexpr float BLOCK_WIDTH{ 60.0f }, BLOCK_HEIGHT{ 20.0f };
 constexpr int BLOCK_COLUMNS{ 11 }, BLOCK_ROWS{ 5 };
+constexpr int BLOCK_REGEN_TIMER{ 7 };
+
+enum BlockType {
+	TRAP = 0,
+	NORMAL = 1,
+	REGEN = 2,
+	DURABLE = 3
+};
 
 #endif
 
