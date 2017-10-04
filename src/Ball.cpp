@@ -11,7 +11,7 @@ Ball::Ball(float x, float y, bool active) :
 }
 
 void Ball::update(sf::Time deltaTime) {
-	shape.move( (slowed ? (velocity * 0.3f) : velocity) * deltaTime.asSeconds());
+	shape.move( (slowed ? (velocity * 1.5f) : velocity) * deltaTime.asSeconds());
 
 	if (left() < 0) {
 		velocity.x = BALL_VELOCITY;

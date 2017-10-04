@@ -12,6 +12,7 @@ Game::Game() :
 	gameLevel{1} {
 
     window.setFramerateLimit(60);
+
 	srand(static_cast<int>(time(NULL)));
 
 	init(gameLevel);
@@ -29,44 +30,47 @@ void Game::init(int level) {
 	balls.emplace_back(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, true);
 
 	//reset paddle
-	paddle.shape.setPosition( WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50 );
+	paddle.shape.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50 );
 
-	//level 1 and 2 wall
-	if (gameLevel == 1 || gameLevel == 2) {
-		for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
-			for (int r{ 0 }; r < BLOCK_ROWS; ++r)
-				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
-		return;
-	}
-
-	//level 3 wall with random balls trapped in blocks
-	if (gameLevel == 3) {
-		for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
-			for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
-				if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_ROWS - 1)
-					balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
-				else blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+	switch (gameLevel) {
+	case 3:
+		buildLevel([this](int c, int r){
+			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_ROWS - 1){
+				balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+				return true;
 			}
-		return;
-	}
-	
-	for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
-		for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
+			return false;
+		});
+		break;
+	case 4:
+		buildLevel([this](int c, int r) {
+			BlockType type{ NORMAL };
 			switch (rand() % 5) {
 			case 0:
-				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), TRAP);
+				type = TRAP;
 				break;
 			case 1:
-				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), DURABLE);
+				type = DURABLE;
 				break;
 			case 2:
-				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), REGEN);
-				break;
-			default:
-				blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+				type = REGEN;
 				break;
 			}
-			
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), type);
+			return true;
+		});
+		break;
+	default:
+		buildLevel([](int c, int r) {return false; });
+		break;
+	}
+}
+
+void Game::buildLevel(std::function<bool(int,int)> func){
+	for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
+		for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
+			if (func(c, r)) continue;
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
 		}
 }
 
@@ -76,13 +80,13 @@ void Game::run() {
     
     while (window.isOpen()) {
 		if (!processEvents()) break;
-		if (balls.size() <= 0) break;
+		/*if (balls.size() <= 0) break;
 		bool endGame = true;
 		for (auto& ball : balls) if (ball.isActive) {
 			endGame = false;
 			break;
 		}
-		if (endGame) break;
+		if (endGame) break;*/
         update(clock.restart());
         render();
     }
@@ -96,7 +100,10 @@ bool Game::processEvents() {
         if(event.type == sf::Event::Closed) {
             window.close();
             break;
-        }
+		} else if (event.type == sf::Event::Resized) {
+			sf::Vector2u keepSize = { (sf::Uint32)WINDOW_WIDTH, (sf::Uint32)WINDOW_HEIGHT };
+			window.setSize(keepSize);
+		}
     }
     
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) return false;

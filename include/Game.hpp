@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include <vector>
+#include <functional>
 
 #include "core.hpp"
 #include "Ball.hpp"
@@ -21,6 +22,8 @@ private:
     void update(sf::Time deltaTime);
     void render();
 	void init(int level);
+
+	void buildLevel(std::function<bool(int, int)> func);
     
 	int gameLevel;
 
