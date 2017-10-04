@@ -46,5 +46,7 @@ c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory0(737): wa
           [
               _Ty=Ball
           ]
+  Ball.cpp
+  Generating Code...
   Breakout.vcxproj -> C:\Users\Oleksandr\Desktop\WIT\Year 3\Semester 1\Console Game Development\workspace\Breakout\Debug\Breakout.exe
   Breakout.vcxproj -> C:\Users\Oleksandr\Desktop\WIT\Year 3\Semester 1\Console Game Development\workspace\Breakout\Debug\Breakout.pdb (Partial PDB)

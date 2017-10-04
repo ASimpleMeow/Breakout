@@ -35,7 +35,8 @@ void Game::init(int level) {
 	switch (gameLevel) {
 	case 3:
 		buildLevel([this](int c, int r){
-			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_ROWS - 1){
+
+			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_COLUMNS - 1){
 				balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
 				return true;
 			}
@@ -138,10 +139,6 @@ void Game::update(sf::Time deltaTime) {
 		for (auto& block : blocks) {
 			testCollision(block, ball);
 			block.update(deltaTime);
-		}
-		if (!ball.isActive) {
-			if (std::fabs(ball.y() - ball.spawn.y) > ball.shape.getRadius() * 5)
-				ball.isActive = true;
 		}
 	}
 

@@ -34,4 +34,7 @@ void Ball::update(sf::Time deltaTime) {
 			slowed = false;
 		}
 	}
+
+	if (isActive) return;
+	if (std::fabs(y() - spawn.y) > (BLOCK_HEIGHT*BLOCK_ROWS)) isActive = true;
 }
