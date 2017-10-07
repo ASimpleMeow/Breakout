@@ -13,6 +13,7 @@ struct Block : public Rectangle{
 	Block(float x, float y, BlockType type = BlockType::NORMAL);
 
 	void update(sf::Time deltaTime);
+	void resize();
 
 };
 

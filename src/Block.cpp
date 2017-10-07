@@ -5,9 +5,9 @@
 
 Block::Block(float x, float y, BlockType type) {
 	shape.setPosition({ x,y });
-	shape.setSize({ BLOCK_WIDTH, BLOCK_HEIGHT });
+	shape.setSize({ BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH, BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT });
 	shape.setFillColor(sf::Color::Green);
-	shape.setOrigin({ BLOCK_WIDTH / 2, BLOCK_HEIGHT / 2 });
+	shape.setOrigin({ (BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH) / 2, (BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT) / 2 });
 	blockType = type;
 
 	switch (blockType) {
@@ -38,7 +38,7 @@ void Block::update(sf::Time deltaTime) {
 
 	switch (blockType) {
 	case DURABLE:
-		damageScale = 255 - ((health - DURABLE) / -0.015);
+		damageScale = 255 - static_cast<int>((health - DURABLE) / -0.015f);
 		shape.setFillColor(sf::Color( damageScale, damageScale, damageScale));
 		break;
 	case REGEN:
@@ -54,4 +54,9 @@ void Block::update(sf::Time deltaTime) {
 		}
 		break;
 	}
+}
+
+void Block::resize() {
+	shape.setSize({ BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH, BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT });
+	shape.setOrigin({ (BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH) / 2, (BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT) / 2 });
 }

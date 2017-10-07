@@ -21,6 +21,7 @@ private:
     bool processEvents();
     void update(sf::Time deltaTime);
     void render();
+	void onResize();
 	void init(int level);
 
 	void buildLevel(std::function<bool(int, int)> func);
@@ -28,11 +29,15 @@ private:
 	int gameLevel;
 
     sf::RenderWindow window;
+	sf::View view;
+	sf::Text scoreText;
+	sf::Font font;
     
     // game specific code
 	std::vector<Ball> balls;
 	Paddle paddle;
 	std::vector<Block> blocks;
+	unsigned int score;
 
 };
 #endif

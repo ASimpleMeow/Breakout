@@ -54,4 +54,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="media\f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="media\font\trs-million.ttf" />
+  </ItemGroup>
 </Project>

@@ -11,11 +11,11 @@ void testCollision(const Paddle& paddle, Ball& ball) noexcept {
 
 	if (!ball.isActive) ball.isActive = true;
 
-	ball.velocity.y = -BALL_VELOCITY;
+	ball.velocity.y = -BALL_VELOCITY_MIN;
 	if (ball.x() < paddle.x()) {
-		ball.velocity.x = -BALL_VELOCITY;
+		ball.velocity.x = -BALL_VELOCITY_MIN;
 	} else {
-		ball.velocity.x = BALL_VELOCITY;
+		ball.velocity.x = BALL_VELOCITY_MIN;
 	}
 }
 
@@ -42,9 +42,9 @@ void testCollision(Block& block, Ball& ball) noexcept {
 	float minOverlapY{ ballFromTop ? overlapTop : overlapBottom };
 
 	if (fabs(minOverlapX) < fabs(minOverlapY)) {
-		ball.velocity.x = ballFromLeft ? -BALL_VELOCITY : BALL_VELOCITY;
+		ball.velocity.x = ballFromLeft ? -BALL_VELOCITY_MIN : BALL_VELOCITY_MIN;
 	} else {
-		ball.velocity.y = ballFromTop ? -BALL_VELOCITY : BALL_VELOCITY;
+		ball.velocity.y = ballFromTop ? -BALL_VELOCITY_MIN : BALL_VELOCITY_MIN;
 	}
 	
 }

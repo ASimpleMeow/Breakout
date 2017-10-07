@@ -12,6 +12,7 @@ struct Paddle : Rectangle {
 
 	void update(sf::Time deltaTime);
 	void update(sf::Time deltaTime, float ballX);
+	void resize();
 };
 
 #endif // !PADDLE_HPP

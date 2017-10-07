@@ -2,42 +2,50 @@
 #include "physics.hpp"
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 Game::Game() :
-    window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),"Breakout"),
+    window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),"Blockout"),
 	paddle(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50),
-	gameLevel{1} {
+	gameLevel{ 1 },
+	score{ 0 } {
 
     window.setFramerateLimit(60);
+	view = window.getView();
 
-	srand(static_cast<int>(time(NULL)));
+	if (font.loadFromFile("media/font/trs-million.ttf")) {
+		scoreText.setFont(font);
+		scoreText.setCharacterSize(30);
+		scoreText.setStyle(sf::Text::Underlined);
+		scoreText.setString("");
+	} else {
+		std::cout << "Error reading font from media/font/\n";
+		std::exit(-1);
+	}
 
 	init(gameLevel);
-	
 }
 
 void Game::init(int level) {
 
 	balls.clear();
 	blocks.clear();
+	score = 0;
 
 	gameLevel = level;
 
 	// main ball
-	balls.emplace_back(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, true);
+	balls.emplace_back(CURRENT_WINDOW_WIDTH / 2, CURRENT_WINDOW_HEIGHT / 2, true);
 
 	//reset paddle
-	paddle.shape.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50 );
+	paddle.shape.setPosition(CURRENT_WINDOW_WIDTH / 2, CURRENT_WINDOW_HEIGHT - 50 );
 
 	switch (gameLevel) {
 	case 3:
 		buildLevel([this](int c, int r){
 
 			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_COLUMNS - 1){
-				balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+				balls.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*CURRENT_WINDOW_WIDTH + 3) + 22,
+					(r + 2)*(BLOCK_HEIGHT_RATIO*CURRENT_WINDOW_HEIGHT + 5));
 				return true;
 			}
 			return false;
@@ -57,7 +65,8 @@ void Game::init(int level) {
 				type = REGEN;
 				break;
 			}
-			blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5), type);
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*CURRENT_WINDOW_WIDTH + 3) + 22,
+				(r + 2)*(BLOCK_HEIGHT_RATIO*CURRENT_WINDOW_HEIGHT + 5), type);
 			return true;
 		});
 		break;
@@ -71,7 +80,8 @@ void Game::buildLevel(std::function<bool(int,int)> func){
 	for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
 		for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
 			if (func(c, r)) continue;
-			blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22, (r + 2)*(BLOCK_HEIGHT + 5));
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*CURRENT_WINDOW_WIDTH + 3) + 22,
+				(r + 2)*(BLOCK_HEIGHT_RATIO*CURRENT_WINDOW_HEIGHT + 5));
 		}
 }
 
@@ -102,8 +112,7 @@ bool Game::processEvents() {
             window.close();
             break;
 		} else if (event.type == sf::Event::Resized) {
-			sf::Vector2u keepSize = { (sf::Uint32)WINDOW_WIDTH, (sf::Uint32)WINDOW_HEIGHT };
-			window.setSize(keepSize);
+			onResize();
 		}
     }
     
@@ -143,7 +152,8 @@ void Game::update(sf::Time deltaTime) {
 	}
 
 	blocks.erase(std::remove_if(std::begin(blocks), std::end(blocks),
-		[](const Block& block) {
+		[this](const Block& block) {
+		if (block.destroyed) score += static_cast<int>(block.blockType);
 		return block.destroyed;
 		}
 		), std::end(blocks)
@@ -156,6 +166,7 @@ void Game::update(sf::Time deltaTime) {
 		), std::end(balls)
 	);
 
+	scoreText.setString("Level : "+ std::to_string(gameLevel) +"\tScore : " + std::to_string(score));
 }
 
 void Game::render() {
@@ -165,8 +176,30 @@ void Game::render() {
 	for(auto& ball: balls) window.draw(ball.shape);
 	window.draw(paddle.shape);
 	for (auto& block : blocks) window.draw(block.shape);
+	window.draw(scoreText);
 
     window.display();
+}
+
+void Game::onResize() {
+	sf::Vector2f size = static_cast<sf::Vector2f>(window.getSize());
+
+	if (size.x < WINDOW_WIDTH) size.x = WINDOW_WIDTH;
+	if (size.y < WINDOW_HEIGHT) size.y = WINDOW_HEIGHT;
+
+	window.setSize(static_cast<sf::Vector2u>(size));
+	view = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y));
+	window.setView(view);
+
+	CURRENT_WINDOW_WIDTH = size.x;
+	CURRENT_WINDOW_HEIGHT = size.y;
+
+	for (auto& ball : balls) ball.resize();
+	for (auto& block : blocks) block.resize();
+	paddle.resize();
+
+	init(gameLevel);
+
 }
 
 

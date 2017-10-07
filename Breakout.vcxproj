@@ -34,6 +34,12 @@
     <ClInclude Include="include\Paddle.hpp" />
     <ClInclude Include="include\physics.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="media\f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="media\font\trs-million.ttf" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7290bc1a-1c04-45ce-aec7-266d28cb6b20}</ProjectGuid>
     <RootNamespace>Breakout</RootNamespace>
@@ -90,7 +96,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps/SFML/include;$(SolutionDir)Breakout/media;$(SolutionDir)Breakout/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Breakout/src;$(SolutionDir)deps/SFML/include;$(SolutionDir)Breakout/media;$(SolutionDir)Breakout/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
     </ClCompile>
