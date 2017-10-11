@@ -1,4 +1,5 @@
 #include "Ball.hpp"
+#include <iostream>
 
 Ball::Ball(float x, float y, bool active) : 
 	isActive{active},
@@ -8,15 +9,20 @@ Ball::Ball(float x, float y, bool active) :
 	shape.setRadius(BALL_RADIUS_RATIO * windowWidth);
 	shape.setFillColor(sf::Color::Red);
 	shape.setOrigin({ BALL_RADIUS_RATIO * windowWidth, BALL_RADIUS_RATIO * windowWidth });
+	float randomVelocity = BALL_VELOCITY_MIN + (rand() % static_cast<int>(BALL_VELOCITY_MAX - BALL_VELOCITY_MIN + 1));
+	velocity = { (rand() % 2 == 0) ? -randomVelocity : randomVelocity , (rand() % 2 == 0) ? -randomVelocity : randomVelocity };
 }
 
 void Ball::update(sf::Time deltaTime) {
-	shape.move( (slowed ? (velocity * 1.5f) : velocity) * deltaTime.asSeconds());
 
-	if (left() < 0) velocity.x = BALL_VELOCITY_MIN;
-	else if (right() > windowWidth) velocity.x = -BALL_VELOCITY_MIN;
+	float randomVelocity = BALL_VELOCITY_MIN + (rand() % static_cast<int>(BALL_VELOCITY_MAX - BALL_VELOCITY_MIN + 1));
 
-	if (top() < 0) velocity.y = BALL_VELOCITY_MIN;
+	shape.move( (slowed ? (velocity * 1.5f) : velocity) * deltaTime.asSeconds() * (float)(windowWidth / WINDOW_WIDTH));
+
+	if (left() < 0) velocity.x = randomVelocity;
+	else if (right() > windowWidth) velocity.x = -randomVelocity;
+
+	if (top() < 0) velocity.y = randomVelocity;
 
 	if (bottom() >= windowHeight) destroyed = true;
 

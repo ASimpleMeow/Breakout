@@ -10,7 +10,7 @@ Block::Block(float x, float y, BlockType type) {
 	shape.setFillColor(sf::Color::Green);
 	shape.setOrigin({ (BLOCK_WIDTH_RATIO * windowWidth) / 2, (BLOCK_HEIGHT_RATIO * windowHeight) / 2 });
 	blockType = type;
-	positionRatio = {x/WINDOW_WIDTH, y/WINDOW_HEIGHT};
+	positionRatio = {x/windowWidth, y/windowHeight};
 
 	switch (blockType) {
 	case DURABLE:

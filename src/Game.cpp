@@ -90,13 +90,6 @@ void Game::run() {
     
     while (window.isOpen()) {
 		if (!processEvents()) break;
-		/*if (balls.size() <= 0) break;
-		bool endGame = true;
-		for (auto& ball : balls) if (ball.isActive) {
-			endGame = false;
-			break;
-		}
-		if (endGame) break;*/
         update(clock.restart());
         render();
     }
@@ -136,6 +129,12 @@ bool Game::processEvents() {
 }
 
 void Game::update(sf::Time deltaTime) {
+
+	auto gameEnd = [](std::vector<Ball>& balls) {
+		for (auto& ball : balls) if (ball.isActive) return false;
+		return true;
+	};
+	if (gameEnd(balls) || balls.size() == 0) init(gameLevel);
     
 	if (gameLevel == 2) paddle.update(deltaTime, balls[0].x());
 	else paddle.update(deltaTime);

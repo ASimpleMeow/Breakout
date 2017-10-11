@@ -5,12 +5,12 @@ Paddle::Paddle(float x, float y) {
 	shape.setSize({PADDLE_WIDTH_RATIO * windowWidth, PADDLE_HEIGHT_RATIO * windowHeight});
 	shape.setFillColor(sf::Color::Blue);
 	shape.setOrigin({ (PADDLE_WIDTH_RATIO * windowWidth)/2, (PADDLE_HEIGHT_RATIO * windowHeight)/2 });
-	positionRatio = { x / WINDOW_WIDTH, y / WINDOW_HEIGHT };
+	positionRatio = { x/windowWidth, y/windowHeight };
 }
 
 void Paddle::update(sf::Time deltaTime) {
 
-	shape.move(veclocity * deltaTime.asSeconds());
+	shape.move(veclocity * deltaTime.asSeconds() * (float)(windowWidth/WINDOW_WIDTH));
 
 	if (left() < 0) shape.move(-left(), 0);
 	if (right() > windowWidth) shape.move(-right() + windowWidth, 0);

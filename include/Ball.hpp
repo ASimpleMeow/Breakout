@@ -7,7 +7,7 @@ struct Ball : public Circle {
 	
 	bool destroyed{ false };
 	bool slowed{ false };
-	sf::Vector2f velocity{ -BALL_VELOCITY_MIN, -BALL_VELOCITY_MIN };
+	sf::Vector2f velocity;
 	sf::Vector2f spawn;
 
 	bool isActive;

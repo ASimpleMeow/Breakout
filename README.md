@@ -27,3 +27,4 @@ Source: [Wiki](https://en.wikipedia.org/wiki/Breakout_(video_game))
     - Regen blocks - Take 2 direct hits to destory, but will regenerate their health over a short period of time.
 - Text display for current level and score (where score in dependant on the blocks destoryed and their blockType).
 - Resize feature where the ratio of the shapes sizes to the window size is preserved.
+- Random ball velocity (within a limit given by two constants BALL_VELOCITY_MIN and BALL_VELOCITY_MAX).
