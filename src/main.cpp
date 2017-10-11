@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-int CURRENT_WINDOW_WIDTH = WINDOW_WIDTH;
-int CURRENT_WINDOW_HEIGHT = WINDOW_HEIGHT;
+int windowWidth = WINDOW_WIDTH;
+int windowHeight = WINDOW_HEIGHT;
 
 int main(int argc,char* argv[]) {
 

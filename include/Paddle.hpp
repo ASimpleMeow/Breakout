@@ -7,6 +7,7 @@
 struct Paddle : Rectangle {
 
 	sf::Vector2f veclocity;
+	sf::Vector2f positionRatio;
 
 	Paddle(float x, float y);
 

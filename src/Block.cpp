@@ -1,14 +1,16 @@
 #include "Block.hpp"
 
 #include "core.hpp"
+#include <iostream>
 
 
 Block::Block(float x, float y, BlockType type) {
 	shape.setPosition({ x,y });
-	shape.setSize({ BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH, BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT });
+	shape.setSize({ BLOCK_WIDTH_RATIO * windowWidth, BLOCK_HEIGHT_RATIO * windowHeight });
 	shape.setFillColor(sf::Color::Green);
-	shape.setOrigin({ (BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH) / 2, (BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT) / 2 });
+	shape.setOrigin({ (BLOCK_WIDTH_RATIO * windowWidth) / 2, (BLOCK_HEIGHT_RATIO * windowHeight) / 2 });
 	blockType = type;
+	positionRatio = {x/WINDOW_WIDTH, y/WINDOW_HEIGHT};
 
 	switch (blockType) {
 	case DURABLE:
@@ -57,6 +59,7 @@ void Block::update(sf::Time deltaTime) {
 }
 
 void Block::resize() {
-	shape.setSize({ BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH, BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT });
-	shape.setOrigin({ (BLOCK_WIDTH_RATIO * CURRENT_WINDOW_WIDTH) / 2, (BLOCK_HEIGHT_RATIO * CURRENT_WINDOW_HEIGHT) / 2 });
+	shape.setPosition({ positionRatio.x * windowWidth, positionRatio.y * windowHeight });
+	shape.setSize({ BLOCK_WIDTH_RATIO * windowWidth, BLOCK_HEIGHT_RATIO * windowHeight });
+	shape.setOrigin({ (BLOCK_WIDTH_RATIO * windowWidth) / 2, (BLOCK_HEIGHT_RATIO * windowHeight) / 2 });
 }

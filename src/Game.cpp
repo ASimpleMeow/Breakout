@@ -34,18 +34,17 @@ void Game::init(int level) {
 	gameLevel = level;
 
 	// main ball
-	balls.emplace_back(CURRENT_WINDOW_WIDTH / 2, CURRENT_WINDOW_HEIGHT / 2, true);
+	balls.emplace_back(windowWidth / 2, windowHeight / 2, true);
 
 	//reset paddle
-	paddle.shape.setPosition(CURRENT_WINDOW_WIDTH / 2, CURRENT_WINDOW_HEIGHT - 50 );
+	paddle.shape.setPosition(windowWidth / 2, windowHeight - 50 );
 
 	switch (gameLevel) {
 	case 3:
 		buildLevel([this](int c, int r){
-
 			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_COLUMNS - 1){
-				balls.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*CURRENT_WINDOW_WIDTH + 3) + 22,
-					(r + 2)*(BLOCK_HEIGHT_RATIO*CURRENT_WINDOW_HEIGHT + 5));
+				balls.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*windowWidth + 3) + 22,
+					(r + 2)*(BLOCK_HEIGHT_RATIO*windowHeight + 5));
 				return true;
 			}
 			return false;
@@ -65,8 +64,8 @@ void Game::init(int level) {
 				type = REGEN;
 				break;
 			}
-			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*CURRENT_WINDOW_WIDTH + 3) + 22,
-				(r + 2)*(BLOCK_HEIGHT_RATIO*CURRENT_WINDOW_HEIGHT + 5), type);
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*windowWidth + 3) + 22,
+				(r + 2)*(BLOCK_HEIGHT_RATIO*windowHeight + 5), type);
 			return true;
 		});
 		break;
@@ -80,8 +79,8 @@ void Game::buildLevel(std::function<bool(int,int)> func){
 	for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
 		for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
 			if (func(c, r)) continue;
-			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*CURRENT_WINDOW_WIDTH + 3) + 22,
-				(r + 2)*(BLOCK_HEIGHT_RATIO*CURRENT_WINDOW_HEIGHT + 5));
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*windowWidth + 3) + 22,
+				(r + 2)*(BLOCK_HEIGHT_RATIO*windowHeight + 5));
 		}
 }
 
@@ -191,14 +190,12 @@ void Game::onResize() {
 	view = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y));
 	window.setView(view);
 
-	CURRENT_WINDOW_WIDTH = size.x;
-	CURRENT_WINDOW_HEIGHT = size.y;
+	windowWidth = size.x;
+	windowHeight = size.y;
 
 	for (auto& ball : balls) ball.resize();
 	for (auto& block : blocks) block.resize();
 	paddle.resize();
-
-	init(gameLevel);
 
 }
 

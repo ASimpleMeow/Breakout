@@ -28,7 +28,7 @@ private:
     
 	int gameLevel;
 
-    sf::RenderWindow window;
+    sf::RenderWindow window; 
 	sf::View view;
 	sf::Text scoreText;
 	sf::Font font;
