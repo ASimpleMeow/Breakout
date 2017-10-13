@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="media\f" />
+    <None Include="media\music\music.ogg" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="media\font\trs-million.ttf" />

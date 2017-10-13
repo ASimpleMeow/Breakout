@@ -4,11 +4,8 @@
 #include <SFML/Graphics.hpp>
 
 constexpr int WINDOW_WIDTH{800}, WINDOW_HEIGHT{600};
-extern int windowWidth, windowHeight;
 
-constexpr float BALL_RADIUS{ 10.0f };
-constexpr float BALL_RADIUS_RATIO{ BALL_RADIUS/WINDOW_WIDTH }, BALL_VELOCITY_MIN{ 135.0f }, BALL_VELOCITY_MAX{ 175.0f };
-constexpr float SLOWED_TIMER{ 5 };
+constexpr float BALL_RADIUS{ 10.0f }, BALL_VELOCITY_MIN{ 135.0f }, BALL_VELOCITY_MAX{ 175.0f }, SLOWED_TIMER{ 5 };
 
 struct Circle {
 	sf::CircleShape shape;
@@ -20,9 +17,7 @@ struct Circle {
 	float bottom() const noexcept { return y() + shape.getRadius();  }
 };
 
-constexpr float PADDLE_WIDTH{ 120.0f }, PADDLE_HEIGHT{ 20.0f };
-constexpr float PADDLE_WIDTH_RATIO{ PADDLE_WIDTH/WINDOW_WIDTH }, PADDLE_HEIGHT_RATIO{ PADDLE_HEIGHT/WINDOW_HEIGHT };
-constexpr float PADDLE_VELOCITY{ 200.0f };
+constexpr float PADDLE_WIDTH{ 120.0f }, PADDLE_HEIGHT{ 20.0f }, PADDLE_VELOCITY{ 200.0f };
 
 struct Rectangle {
 	sf::RectangleShape shape;
@@ -35,15 +30,21 @@ struct Rectangle {
 };
 
 constexpr float BLOCK_WIDTH{60.0f}, BLOCK_HEIGHT{20.0f};
-constexpr float BLOCK_WIDTH_RATIO{ BLOCK_WIDTH/WINDOW_WIDTH }, BLOCK_HEIGHT_RATIO{ BLOCK_HEIGHT/WINDOW_HEIGHT };
 constexpr int BLOCK_COLUMNS{ 11 }, BLOCK_ROWS{ 5 };
 constexpr int BLOCK_REGEN_TIMER{ 7 };
 
+/*Reason for not using the enum class : 
+	- I require the use of the int value (for block lives and score)
+	- I have no other interfering enums */
 enum BlockType {
 	TRAP = 0,
 	NORMAL = 1,
 	REGEN = 2,
 	DURABLE = 3
+};
+
+enum class GameType {
+	NORMAL, AUTO_PADDLE, TRAPPED_BALLS, MULTI_BLOCKS
 };
 #endif
 

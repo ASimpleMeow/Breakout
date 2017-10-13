@@ -6,7 +6,6 @@
 struct Block : public Rectangle{
 
 	bool destroyed{ false };
-	sf::Vector2f positionRatio;
 	int health;
 	float regenTimer{ BLOCK_REGEN_TIMER };
 	BlockType blockType;
@@ -14,8 +13,6 @@ struct Block : public Rectangle{
 	Block(float x, float y, BlockType type = BlockType::NORMAL);
 
 	void update(sf::Time deltaTime);
-	void resize();
-
 };
 
 #endif // !BLOCK_HPP

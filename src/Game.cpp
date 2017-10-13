@@ -5,12 +5,20 @@
 
 Game::Game() :
     window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),"Blockout"),
+	view(window.getView()),
 	paddle(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50),
-	gameLevel{ 1 },
+	gameLevel{ GameType::NORMAL },
 	score{ 0 } {
 
     window.setFramerateLimit(60);
-	view = window.getView();
+
+	if (music.openFromFile("media/music/music.ogg")) {
+		music.setVolume(50);
+		music.setLoop(true);
+		music.play();
+	} else {
+		std::cout << "Error reading font from media/music - needs music.mid file\n";
+	}
 
 	if (font.loadFromFile("media/font/trs-million.ttf")) {
 		scoreText.setFont(font);
@@ -18,39 +26,38 @@ Game::Game() :
 		scoreText.setStyle(sf::Text::Underlined);
 		scoreText.setString("");
 	} else {
-		std::cout << "Error reading font from media/font/\n";
-		std::exit(-1);
+		std::cout << "Error reading font from media/font/ - needs trs-million.ttf font\n";
 	}
 
 	init(gameLevel);
 }
 
-void Game::init(int level) {
+void Game::init(GameType gameType) {
 
 	balls.clear();
 	blocks.clear();
 	score = 0;
 
-	gameLevel = level;
+	gameLevel = gameType;
 
 	// main ball
-	balls.emplace_back(windowWidth / 2, windowHeight / 2, true);
+	balls.emplace_back(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, true);
 
 	//reset paddle
-	paddle.shape.setPosition(windowWidth / 2, windowHeight - 50 );
+	paddle.shape.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50 );
 
 	switch (gameLevel) {
-	case 3:
+	case GameType::TRAPPED_BALLS:
 		buildLevel([this](int c, int r){
 			if (rand() % 5 == 0 && r > 0 && r < BLOCK_ROWS - 1 && c > 0 && c < BLOCK_COLUMNS - 1){
-				balls.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*windowWidth + 3) + 22,
-					(r + 2)*(BLOCK_HEIGHT_RATIO*windowHeight + 5));
+				balls.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22,
+					(r + 2)*(BLOCK_HEIGHT + 5));
 				return true;
 			}
 			return false;
 		});
 		break;
-	case 4:
+	case GameType::MULTI_BLOCKS:
 		buildLevel([this](int c, int r) {
 			BlockType type{ NORMAL };
 			switch (rand() % 5) {
@@ -64,8 +71,8 @@ void Game::init(int level) {
 				type = REGEN;
 				break;
 			}
-			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*windowWidth + 3) + 22,
-				(r + 2)*(BLOCK_HEIGHT_RATIO*windowHeight + 5), type);
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22,
+				(r + 2)*(BLOCK_HEIGHT + 5), type);
 			return true;
 		});
 		break;
@@ -79,8 +86,8 @@ void Game::buildLevel(std::function<bool(int,int)> func){
 	for (int c{ 0 }; c < BLOCK_COLUMNS; ++c)
 		for (int r{ 0 }; r < BLOCK_ROWS; ++r) {
 			if (func(c, r)) continue;
-			blocks.emplace_back((c + 1)*(BLOCK_WIDTH_RATIO*windowWidth + 3) + 22,
-				(r + 2)*(BLOCK_HEIGHT_RATIO*windowHeight + 5));
+			blocks.emplace_back((c + 1)*(BLOCK_WIDTH + 3) + 22,
+				(r + 2)*(BLOCK_HEIGHT + 5));
 		}
 }
 
@@ -93,6 +100,11 @@ void Game::run() {
         update(clock.restart());
         render();
     }
+	try {
+		music.stop();
+	} catch (const char* msg) {
+
+	}
 }
 
 
@@ -104,19 +116,20 @@ bool Game::processEvents() {
             window.close();
             break;
 		} else if (event.type == sf::Event::Resized) {
-			onResize();
+			onResize(event.size.width, event.size.height);
 		}
     }
     
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) return false;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)) init(1);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2)) init(2);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3)) init(3);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num4)) init(4);
+	// Levels
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)) init(GameType::NORMAL);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2)) init(GameType::AUTO_PADDLE);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3)) init(GameType::TRAPPED_BALLS);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num4)) init(GameType::MULTI_BLOCKS);
     
 
-	if (gameLevel == 2) return true;	//automatic paddle
+	if (gameLevel == GameType::AUTO_PADDLE) return true;	// Automatic paddle
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 		paddle.veclocity.x = -PADDLE_VELOCITY;
@@ -136,7 +149,7 @@ void Game::update(sf::Time deltaTime) {
 	};
 	if (gameEnd(balls) || balls.size() == 0) init(gameLevel);
     
-	if (gameLevel == 2) paddle.update(deltaTime, balls[0].x());
+	if (gameLevel == GameType::AUTO_PADDLE) paddle.update(deltaTime, balls[0].x());
 	else paddle.update(deltaTime);
 	
 
@@ -146,25 +159,26 @@ void Game::update(sf::Time deltaTime) {
 		for (auto& block : blocks) {
 			testCollision(block, ball);
 			block.update(deltaTime);
+			if(block.destroyed) score += static_cast<int>(block.blockType);
 		}
 	}
+	
+	auto eraseFromVector = [](auto& objects) {
+		objects.erase(std::remove_if(std::begin(objects), std::end(objects),
+			[](const auto& object) {
+			return object.destroyed;
+			}), std::end(objects)
+		);
+	};
+	eraseFromVector(blocks);
+	eraseFromVector(balls);
 
-	blocks.erase(std::remove_if(std::begin(blocks), std::end(blocks),
-		[this](const Block& block) {
-		if (block.destroyed) score += static_cast<int>(block.blockType);
-		return block.destroyed;
-		}
-		), std::end(blocks)
-	);
-
-	balls.erase(std::remove_if(std::begin(balls), std::end(balls),
-		[](const Ball& ball) {
-		return ball.destroyed;
-		}
-		), std::end(balls)
-	);
-
-	scoreText.setString("Level : "+ std::to_string(gameLevel) +"\tScore : " + std::to_string(score));
+	scoreText.setString("Level : "+ std::to_string(static_cast<int>(gameLevel)+1) +"\tScore : " + std::to_string(score));
+	if (blocks.empty()) {
+		int level = static_cast<int>(gameLevel);
+		level = ++level % 4;
+		init(static_cast<GameType>(level));
+	}
 }
 
 void Game::render() {
@@ -179,23 +193,26 @@ void Game::render() {
     window.display();
 }
 
-void Game::onResize() {
-	sf::Vector2f size = static_cast<sf::Vector2f>(window.getSize());
+/*Heavily influenced by SFML's example on resizing*/
+void Game::onResize(int width, int height) {
+	
+	float windowRatio{ (float)width / (float)height };
+	float viewRatio{ (float)view.getSize().x / (float)view.getSize().y };
+	sf::Vector2f size{ 1,1 };
+	sf::Vector2f position{ 0,0 };
 
-	if (size.x < WINDOW_WIDTH) size.x = WINDOW_WIDTH;
-	if (size.y < WINDOW_HEIGHT) size.y = WINDOW_HEIGHT;
+	bool spacing = (windowRatio < viewRatio) ? false : true;
 
-	window.setSize(static_cast<sf::Vector2u>(size));
-	view = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y));
+	if (spacing) {
+		size.x = viewRatio / windowRatio;
+		position.x = (1 - size.x) / 2.0f;
+	} else {
+		size.y = windowRatio / viewRatio;
+		position.y = (1 - size.y) / 2.0f;
+	}
+
+	view.setViewport(sf::FloatRect(position, size));
 	window.setView(view);
-
-	windowWidth = size.x;
-	windowHeight = size.y;
-
-	for (auto& ball : balls) ball.resize();
-	for (auto& block : blocks) block.resize();
-	paddle.resize();
-
 }
 
 

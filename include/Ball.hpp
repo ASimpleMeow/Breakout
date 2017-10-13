@@ -16,7 +16,6 @@ struct Ball : public Circle {
 	Ball(float x, float y, bool active = false);
 
 	void update(sf::Time deltaTime);
-	void resize();
 };
 
 #endif // !BALL_HPP

@@ -11,8 +11,6 @@ void testCollision(const Paddle& paddle, Ball& ball) noexcept {
 
 	float randomVelocity = BALL_VELOCITY_MIN + (rand() % static_cast<int>(BALL_VELOCITY_MAX - BALL_VELOCITY_MIN + 1));
 
-	//if (!ball.isActive) ball.isActive = true;
-
 	ball.velocity.y = -randomVelocity;
 	ball.velocity.x = (ball.x() < paddle.x()) ? -randomVelocity : randomVelocity;
 }

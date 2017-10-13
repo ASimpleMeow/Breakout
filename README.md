@@ -28,3 +28,7 @@ Source: [Wiki](https://en.wikipedia.org/wiki/Breakout_(video_game))
 - Text display for current level and score (where score in dependant on the blocks destoryed and their blockType).
 - Resize feature where the ratio of the shapes sizes to the window size is preserved.
 - Random ball velocity (within a limit given by two constants BALL_VELOCITY_MIN and BALL_VELOCITY_MAX).
+- Looping background arcade music to make the player really annoyed.
+- Automatic level transition : 
+	- When you destroy all block it goes to the next level
+	- Once it reaches the final level it loops back to the first level.
